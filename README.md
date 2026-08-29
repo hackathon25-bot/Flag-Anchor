@@ -1,12 +1,17 @@
-Flag Anchor — Rev E
-A parametric flag mount bracket, modeled entirely in KCL (Zoo's CAD scripting language). One manufactured part combining a paddle-style base, mounting arm, and an angled bored socket that the flag pole slides into and locks down with a set screw.
+# Flag Anchor
 
+A flag mount designed to display a flag from a backpack cup holder.
 
-Overview
-Fully parametric — arm length, socket angle, wall thickness, mount hole position, and set-screw boss geometry are all named variables in main.kcl.
-Single-body design — the head, transition, arm, and socket are unioned into one solid, then bored for the pole and mount hole.
-Angled socket — the rear socket sits at an angle by default (rearSocketAngle), with independent left-right tilt and roll parameters.
-Viewing the model
-GitHub renders .stl files with an interactive 3D viewer directly in the file browser — open Rev E.stl and drag to rotate, no software required.
-Photos
-  
+![Flag Anchor](thumbnail.png)
+
+The bracket clips into a standard backpack cup/bottle holder and holds a flag pole at an angle, so you can fly a flag while hiking, camping, biking, or at events — hands-free.
+
+## Photos
+
+![Photo 1](jpeg%201.jpg)
+![Photo 2](jpeg%202.jpg)
+![Photo 3](jpeg%203.jpg)
+
+## 3D Model
+
+Open [`Rev E.stl`](Rev%20E.stl) above to view and rotate the model right here on GitHub.

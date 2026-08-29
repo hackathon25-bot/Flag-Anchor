@@ -1,0 +1,269 @@
+// Parametric flat paddle with angled rear socket
+// Single manufactured part assembled from an editable paddle head, arm, transition, and bored socket.
+@settings(defaultLengthUnit = mm, defaultAngleUnit = deg, kclVersion = 2.0)
+
+import headBody from "paddleHead.kcl"
+
+armWidth = 33mm
+armThickness = 5.5mm
+armStartY = 48mm
+armRearCenterY = 112mm
+armCenterZ = 13.5mm
+mountHoleDiameter = 12.5mm
+mountHoleCenterY = 91mm
+
+transitionWidth = 33mm
+transitionFrontY = 38mm
+transitionTopRearY = 68mm
+transitionBottomRearY = 82mm
+transitionFrontBottomZ = 2mm
+transitionFrontTopZ = 25mm
+
+socketInnerDiameter = 5.60mm
+socketOuterDiameter = 13.4mm
+socketFlangeDiameter = 28mm
+socketFlangeThickness = 4mm
+socketTransitionBaseDiameter = 24mm
+socketTransitionLength = 18mm
+socketTubeLength = 30mm
+socketBaseX = 0mm
+socketBaseY = armRearCenterY
+socketCenterZ = armCenterZ
+rearSocketAngle = 25deg
+socketLeftRightTilt = 0deg
+socketRoll = 0deg
+
+socketOuterRadius = socketOuterDiameter / 2
+socketInnerRadius = socketInnerDiameter / 2
+socketWallThickness = socketOuterRadius - socketInnerRadius
+socketFlangeRadius = socketFlangeDiameter / 2
+socketTransitionBaseRadius = socketTransitionBaseDiameter / 2
+socketFlangeHalfThickness = socketFlangeThickness / 2
+socketEndZ = socketTransitionLength + socketTubeLength
+
+sideM4TapDrillDiameter = 3.3mm
+sideM4BossSize = 9mm
+sideM4BossHalfSize = sideM4BossSize / 2
+sideM4BossProjection = 3mm
+sideM4BossOverlap = 3mm
+sideM4OffsetFromOpening = 12mm
+sideM4CenterZ = socketEndZ - sideM4OffsetFromOpening
+sideM4BossBottomZ = sideM4CenterZ - sideM4BossHalfSize
+sideM4BossTopZ = sideM4CenterZ + sideM4BossHalfSize
+sideM4BossStartX = socketOuterRadius - sideM4BossOverlap
+sideM4BossDepth = sideM4BossProjection + sideM4BossOverlap
+sideM4HoleStartX = socketInnerRadius - 1mm
+sideM4HoleDepth = sideM4BossProjection + socketWallThickness + 2mm
+
+armHalfWidth = armWidth / 2
+armProfile = sketch(on = XY) {
+  frontEdge = line(start = [var -16.5mm, var 48mm], end = [var 16.5mm, var 48mm])
+  rightSide = line(start = [var 16.5mm, var 48mm], end = [var 16.5mm, var 112mm])
+  rearRound = arc(start = [var 16.5mm, var 112mm], end = [var -16.5mm, var 112mm], center = [var 0mm, var 112mm])
+  leftSide = line(start = [var -16.5mm, var 112mm], end = [var -16.5mm, var 48mm])
+  coincident([frontEdge.end, rightSide.start])
+  coincident([rightSide.end, rearRound.start])
+  coincident([rearRound.end, leftSide.start])
+  coincident([leftSide.end, frontEdge.start])
+  horizontal(frontEdge)
+  vertical(rightSide)
+  vertical(leftSide)
+  tangent([rightSide, rearRound])
+  tangent([rearRound, leftSide])
+  horizontalDistance([frontEdge.start, ORIGIN]) == armHalfWidth
+  verticalDistance([ORIGIN, frontEdge.start]) == armStartY
+  horizontalDistance([ORIGIN, frontEdge.end]) == armHalfWidth
+  verticalDistance([ORIGIN, rearRound.start]) == armRearCenterY
+  radius(rearRound) == armHalfWidth
+  horizontalDistance([frontEdge.start, frontEdge.end]) == armWidth
+  verticalDistance([frontEdge.start, leftSide.start]) == armRearCenterY - armStartY
+  fixed([rearRound.center, [0mm, 112mm]])
+}
+armRegion = region(
+  segments = [
+    armProfile.frontEdge,
+    armProfile.rightSide
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+armRaw = extrude(armRegion, length = armThickness)
+  |> translate(z = armCenterZ - (armThickness / 2), global = true)
+hiddenArmProfile = hide(armProfile)
+
+transitionProfile = sketch(on = YZ) {
+  frontEdge = line(start = [var 38mm, var 2mm], end = [var 38mm, var 25mm])
+  topSlope = line(start = [var 38mm, var 25mm], end = [var 68mm, var 16.25mm])
+  rearEdge = line(start = [var 68mm, var 16.25mm], end = [var 82mm, var 10.75mm])
+  bottomSlope = line(start = [var 82mm, var 10.75mm], end = [var 38mm, var 2mm])
+  coincident([frontEdge.end, topSlope.start])
+  coincident([topSlope.end, rearEdge.start])
+  coincident([rearEdge.end, bottomSlope.start])
+  coincident([bottomSlope.end, frontEdge.start])
+  fixed([frontEdge.start, [38mm, 2mm]])
+  fixed([frontEdge.end, [38mm, 25mm]])
+  fixed([topSlope.end, [68mm, 16.25mm]])
+  fixed([rearEdge.end, [82mm, 10.75mm]])
+}
+transitionRegion = region(
+  segments = [
+    transitionProfile.frontEdge,
+    transitionProfile.topSlope
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+transitionRaw = extrude(transitionRegion, length = transitionWidth, symmetric = true)
+hiddenTransitionProfile = hide(transitionProfile)
+
+mountHoleProfile = sketch(on = XY) {
+  boreCircle = circle(start = [var 6.25mm, var 91mm], center = [var 0mm, var 91mm])
+  radiusGuide = line(start = [var 0mm, var 91mm], end = [var 6.25mm, var 91mm], construction = true)
+  coincident([boreCircle.center, radiusGuide.start])
+  coincident([boreCircle.start, radiusGuide.end])
+  horizontal(radiusGuide)
+  horizontalDistance([boreCircle.center, ORIGIN]) == 0mm
+  verticalDistance([ORIGIN, boreCircle.center]) == mountHoleCenterY
+  diameter(boreCircle) == mountHoleDiameter
+}
+mountHoleRegion = region(segments = [mountHoleProfile.boreCircle])
+mountHoleTool = extrude(mountHoleRegion, length = armThickness + 4mm)
+  |> translate(z = armCenterZ - (armThickness / 2) - 2mm, global = true)
+hiddenMountHoleProfile = hide(mountHoleProfile)
+
+socketOuterProfile = sketch(on = XZ) {
+  flangeBottom = line(start = [var 0mm, var -2mm], end = [var 14mm, var -2mm])
+  flangeOuter = line(start = [var 14mm, var -2mm], end = [var 14mm, var 2mm])
+  flangeTop = line(start = [var 14mm, var 2mm], end = [var 11.411111mm, var 2mm])
+  transitionSlope = line(start = [var 11.411111mm, var 2mm], end = [var 6.7mm, var 18mm])
+  tubeOuter = line(start = [var 6.7mm, var 18mm], end = [var 6.7mm, var 48mm])
+  socketTip = line(start = [var 6.7mm, var 48mm], end = [var 0mm, var 48mm])
+  axisWall = line(start = [var 0mm, var 48mm], end = [var 0mm, var -2mm])
+  taperGuide = line(start = [var 12mm, var 0mm], end = [var 6.7mm, var 18mm], construction = true)
+  coincident([flangeBottom.end, flangeOuter.start])
+  coincident([flangeOuter.end, flangeTop.start])
+  coincident([flangeTop.end, transitionSlope.start])
+  coincident([transitionSlope.end, tubeOuter.start])
+  coincident([tubeOuter.end, socketTip.start])
+  coincident([socketTip.end, axisWall.start])
+  coincident([axisWall.end, flangeBottom.start])
+  coincident([transitionSlope.end, taperGuide.end])
+  horizontal(flangeBottom)
+  vertical(flangeOuter)
+  horizontal(flangeTop)
+  vertical(tubeOuter)
+  horizontal(socketTip)
+  vertical(axisWall)
+  parallel([transitionSlope, taperGuide])
+  horizontalDistance([ORIGIN, flangeBottom.start]) == 0mm
+  verticalDistance([flangeBottom.start, ORIGIN]) == socketFlangeHalfThickness
+  horizontalDistance([ORIGIN, flangeBottom.end]) == socketFlangeRadius
+  verticalDistance([ORIGIN, flangeOuter.end]) == socketFlangeHalfThickness
+  horizontalDistance([ORIGIN, transitionSlope.end]) == socketOuterRadius
+  verticalDistance([ORIGIN, transitionSlope.end]) == socketTransitionLength
+  verticalDistance([ORIGIN, tubeOuter.end]) == socketEndZ
+  horizontalDistance([ORIGIN, socketTip.end]) == 0mm
+  horizontalDistance([ORIGIN, taperGuide.start]) == socketTransitionBaseRadius
+  verticalDistance([ORIGIN, taperGuide.start]) == 0mm
+}
+socketOuterRegion = region(
+  segments = [
+    socketOuterProfile.flangeBottom,
+    socketOuterProfile.flangeOuter
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+socketOuterAxial = revolve(socketOuterRegion, axis = Y)
+hiddenSocketOuterProfile = hide(socketOuterProfile)
+
+sideM4BossProfile = sketch(on = YZ) {
+  bottomEdge = line(start = [var -4.5mm, var 31.5mm], end = [var 4.5mm, var 31.5mm])
+  rightEdge = line(start = [var 4.5mm, var 31.5mm], end = [var 4.5mm, var 40.5mm])
+  topEdge = line(start = [var 4.5mm, var 40.5mm], end = [var -4.5mm, var 40.5mm])
+  leftEdge = line(start = [var -4.5mm, var 40.5mm], end = [var -4.5mm, var 31.5mm])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+  horizontalDistance([bottomEdge.start, ORIGIN]) == sideM4BossHalfSize
+  verticalDistance([ORIGIN, bottomEdge.start]) == sideM4BossBottomZ
+  horizontalDistance([ORIGIN, bottomEdge.end]) == sideM4BossHalfSize
+  verticalDistance([ORIGIN, rightEdge.end]) == sideM4BossTopZ
+}
+sideM4BossRegion = region(
+  segments = [
+    sideM4BossProfile.bottomEdge,
+    sideM4BossProfile.rightEdge
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+sideM4BossAxial = extrude(sideM4BossRegion, length = sideM4BossDepth)
+  |> translate(x = sideM4BossStartX, global = true)
+hiddenSideM4BossProfile = hide(sideM4BossProfile)
+
+sideM4TapProfile = sketch(on = YZ) {
+  tapCircle = circle(start = [var 1.65mm, var 36mm], center = [var 0mm, var 36mm])
+  radiusGuide = line(start = [var 0mm, var 36mm], end = [var 1.65mm, var 36mm], construction = true)
+  coincident([tapCircle.center, radiusGuide.start])
+  coincident([tapCircle.start, radiusGuide.end])
+  horizontal(radiusGuide)
+  horizontalDistance([tapCircle.center, ORIGIN]) == 0mm
+  verticalDistance([ORIGIN, tapCircle.center]) == sideM4CenterZ
+  diameter(tapCircle) == sideM4TapDrillDiameter
+}
+sideM4TapRegion = region(segments = [sideM4TapProfile.tapCircle])
+sideM4TapAxial = extrude(sideM4TapRegion, length = sideM4HoleDepth)
+  |> translate(x = sideM4HoleStartX, global = true)
+hiddenSideM4TapProfile = hide(sideM4TapProfile)
+
+socketSideBossUnion = union([socketOuterAxial, sideM4BossAxial], legacyMethod = true)
+socketSideBossDrilled = subtract(socketSideBossUnion[0], tools = [sideM4TapAxial])
+
+socketBoreProfile = sketch(on = XY) {
+  boreCircle = circle(start = [var 2.8mm, var 0mm], center = [var 0mm, var 0mm])
+  radiusGuide = line(start = [var 0mm, var 0mm], end = [var 2.8mm, var 0mm], construction = true)
+  coincident([boreCircle.center, ORIGIN])
+  coincident([radiusGuide.start, ORIGIN])
+  coincident([boreCircle.start, radiusGuide.end])
+  horizontal(radiusGuide)
+  diameter(boreCircle) == socketInnerDiameter
+}
+socketBoreRegion = region(segments = [socketBoreProfile.boreCircle])
+socketBoreAxial = extrude(socketBoreRegion, length = socketEndZ + socketFlangeThickness + 4mm)
+  |> translate(z = -socketFlangeHalfThickness - 2mm, global = true)
+hiddenSocketBoreProfile = hide(socketBoreProfile)
+
+socketOuterPlaced = socketSideBossDrilled
+  |> rotate(axis = X, angle = -90deg + socketLeftRightTilt, global = true)
+  |> rotate(axis = Z, angle = rearSocketAngle, global = true)
+  |> rotate(axis = Y, angle = socketRoll, global = true)
+  |> translate(
+       x = socketBaseX,
+       y = socketBaseY,
+       z = socketCenterZ,
+       global = true,
+     )
+socketBorePlaced = socketBoreAxial
+  |> rotate(axis = X, angle = -90deg + socketLeftRightTilt, global = true)
+  |> rotate(axis = Z, angle = rearSocketAngle, global = true)
+  |> rotate(axis = Y, angle = socketRoll, global = true)
+  |> translate(
+       x = socketBaseX,
+       y = socketBaseY,
+       z = socketCenterZ,
+       global = true,
+     )
+
+headTransitionUnion = union([headBody, transitionRaw], legacyMethod = true)
+coreUnion = union([headTransitionUnion[0], armRaw], legacyMethod = true)
+completeUnion = union([coreUnion[0], socketOuterPlaced], legacyMethod = true)
+socketBoredPaddle = subtract(completeUnion, tools = [socketBorePlaced])
+
+finishedPaddle = subtract(socketBoredPaddle, tools = [mountHoleTool])
+  |> appearance(color = "#b8bd21", roughness = 62, metalness = 0)

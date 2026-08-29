@@ -1,0 +1,270 @@
+// Parametric asymmetric flat paddle head
+// Four constrained loft regions preserve the rounded cross-section and rear-biased plan.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+paddleWidth = 92mm
+paddleThickness = 27mm
+paddleFrontFlatWidth = 72mm
+paddlePlanCornerRadius = 10mm
+paddleLeftRearDepth = 66mm
+paddleRightRearDepth = 49mm
+paddleEndScale = 0.74
+paddleLowerFullZ = 7mm
+paddleUpperFullZ = 20mm
+
+paddleHalfWidth = paddleWidth / 2
+paddleHalfFrontFlat = paddleFrontFlatWidth / 2
+paddleEndHalfWidth = paddleHalfWidth * paddleEndScale
+paddleEndHalfFrontFlat = paddleHalfFrontFlat * paddleEndScale
+paddleEndCornerRadius = paddlePlanCornerRadius * paddleEndScale
+paddleEndLeftRearDepth = paddleLeftRearDepth * paddleEndScale
+paddleEndRightRearDepth = paddleRightRearDepth * paddleEndScale
+
+headBottomProfile = sketch(on = XY) {
+  frontEdge = line(start = [var -26.64mm, var 0mm], end = [var 26.64mm, var 0mm])
+  frontRightRound = arc(start = [var 26.64mm, var 0mm], end = [var 34.04mm, var 7.4mm], center = [var 26.64mm, var 7.4mm])
+  rightSide = line(start = [var 34.04mm, var 7.4mm], end = [var 34.04mm, var 28.86mm])
+  rearRightRound = arc(start = [var 34.04mm, var 28.86mm], end = [var 26.64mm, var 36.26mm], center = [var 26.64mm, var 28.86mm])
+  rearBiasEdge = line(start = [var 26.64mm, var 36.26mm], end = [var -26.64mm, var 48.84mm])
+  rearLeftRound = arc(start = [var -26.64mm, var 48.84mm], end = [var -34.04mm, var 41.44mm], center = [var -26.64mm, var 41.44mm])
+  leftSide = line(start = [var -34.04mm, var 41.44mm], end = [var -34.04mm, var 7.4mm])
+  frontLeftRound = arc(start = [var -34.04mm, var 7.4mm], end = [var -26.64mm, var 0mm], center = [var -26.64mm, var 7.4mm])
+  coincident([frontEdge.end, frontRightRound.start])
+  coincident([frontRightRound.end, rightSide.start])
+  coincident([rightSide.end, rearRightRound.start])
+  coincident([rearRightRound.end, rearBiasEdge.start])
+  coincident([rearBiasEdge.end, rearLeftRound.start])
+  coincident([rearLeftRound.end, leftSide.start])
+  coincident([leftSide.end, frontLeftRound.start])
+  coincident([frontLeftRound.end, frontEdge.start])
+  horizontal(frontEdge)
+  vertical(rightSide)
+  vertical(leftSide)
+  tangent([frontEdge, frontRightRound])
+  tangent([frontRightRound, rightSide])
+  tangent([rightSide, rearRightRound])
+  tangent([rearLeftRound, leftSide])
+  tangent([leftSide, frontLeftRound])
+  tangent([frontLeftRound, frontEdge])
+  equalRadius([
+    frontRightRound,
+    rearRightRound,
+    rearLeftRound,
+    frontLeftRound
+  ])
+  radius(frontRightRound) == paddleEndCornerRadius
+  horizontalDistance([frontEdge.start, ORIGIN]) == paddleEndHalfFrontFlat
+  verticalDistance([frontEdge.start, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, frontEdge.end]) == paddleEndHalfFrontFlat
+  horizontalDistance([ORIGIN, rightSide.start]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, rightSide.start]) == paddleEndCornerRadius
+  horizontalDistance([ORIGIN, rightSide.end]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, rightSide.end]) == paddleEndRightRearDepth - paddleEndCornerRadius
+  horizontalDistance([ORIGIN, rearRightRound.end]) == paddleEndHalfWidth - paddleEndCornerRadius
+  verticalDistance([ORIGIN, rearRightRound.end]) == paddleEndRightRearDepth
+  horizontalDistance([rearLeftRound.start, ORIGIN]) == paddleEndHalfWidth - paddleEndCornerRadius
+  verticalDistance([ORIGIN, rearLeftRound.start]) == paddleEndLeftRearDepth
+  horizontalDistance([leftSide.start, ORIGIN]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, leftSide.start]) == paddleEndLeftRearDepth - paddleEndCornerRadius
+  horizontalDistance([leftSide.end, ORIGIN]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, leftSide.end]) == paddleEndCornerRadius
+}
+headBottomRegion = region(
+  segments = [
+    headBottomProfile.frontEdge,
+    headBottomProfile.frontRightRound
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+
+headLowerFullPlane = offsetPlane(XY, offset = paddleLowerFullZ)
+headLowerFullProfile = sketch(on = headLowerFullPlane) {
+  frontEdge = line(start = [var -36mm, var 0mm], end = [var 36mm, var 0mm])
+  frontRightRound = arc(start = [var 36mm, var 0mm], end = [var 46mm, var 10mm], center = [var 36mm, var 10mm])
+  rightSide = line(start = [var 46mm, var 10mm], end = [var 46mm, var 39mm])
+  rearRightRound = arc(start = [var 46mm, var 39mm], end = [var 36mm, var 49mm], center = [var 36mm, var 39mm])
+  rearBiasEdge = line(start = [var 36mm, var 49mm], end = [var -36mm, var 66mm])
+  rearLeftRound = arc(start = [var -36mm, var 66mm], end = [var -46mm, var 56mm], center = [var -36mm, var 56mm])
+  leftSide = line(start = [var -46mm, var 56mm], end = [var -46mm, var 10mm])
+  frontLeftRound = arc(start = [var -46mm, var 10mm], end = [var -36mm, var 0mm], center = [var -36mm, var 10mm])
+  coincident([frontEdge.end, frontRightRound.start])
+  coincident([frontRightRound.end, rightSide.start])
+  coincident([rightSide.end, rearRightRound.start])
+  coincident([rearRightRound.end, rearBiasEdge.start])
+  coincident([rearBiasEdge.end, rearLeftRound.start])
+  coincident([rearLeftRound.end, leftSide.start])
+  coincident([leftSide.end, frontLeftRound.start])
+  coincident([frontLeftRound.end, frontEdge.start])
+  horizontal(frontEdge)
+  vertical(rightSide)
+  vertical(leftSide)
+  tangent([frontEdge, frontRightRound])
+  tangent([frontRightRound, rightSide])
+  tangent([rightSide, rearRightRound])
+  tangent([rearLeftRound, leftSide])
+  tangent([leftSide, frontLeftRound])
+  tangent([frontLeftRound, frontEdge])
+  equalRadius([
+    frontRightRound,
+    rearRightRound,
+    rearLeftRound,
+    frontLeftRound
+  ])
+  radius(frontRightRound) == paddlePlanCornerRadius
+  horizontalDistance([frontEdge.start, ORIGIN]) == paddleHalfFrontFlat
+  verticalDistance([frontEdge.start, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, frontEdge.end]) == paddleHalfFrontFlat
+  horizontalDistance([ORIGIN, rightSide.start]) == paddleHalfWidth
+  verticalDistance([ORIGIN, rightSide.start]) == paddlePlanCornerRadius
+  horizontalDistance([ORIGIN, rightSide.end]) == paddleHalfWidth
+  verticalDistance([ORIGIN, rightSide.end]) == paddleRightRearDepth - paddlePlanCornerRadius
+  horizontalDistance([ORIGIN, rearRightRound.end]) == paddleHalfWidth - paddlePlanCornerRadius
+  verticalDistance([ORIGIN, rearRightRound.end]) == paddleRightRearDepth
+  horizontalDistance([rearLeftRound.start, ORIGIN]) == paddleHalfWidth - paddlePlanCornerRadius
+  verticalDistance([ORIGIN, rearLeftRound.start]) == paddleLeftRearDepth
+  horizontalDistance([leftSide.start, ORIGIN]) == paddleHalfWidth
+  verticalDistance([ORIGIN, leftSide.start]) == paddleLeftRearDepth - paddlePlanCornerRadius
+  horizontalDistance([leftSide.end, ORIGIN]) == paddleHalfWidth
+  verticalDistance([ORIGIN, leftSide.end]) == paddlePlanCornerRadius
+}
+headLowerFullRegion = region(
+  segments = [
+    headLowerFullProfile.frontEdge,
+    headLowerFullProfile.frontRightRound
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+
+headUpperFullPlane = offsetPlane(XY, offset = paddleUpperFullZ)
+headUpperFullProfile = sketch(on = headUpperFullPlane) {
+  frontEdge = line(start = [var -36mm, var 0mm], end = [var 36mm, var 0mm])
+  frontRightRound = arc(start = [var 36mm, var 0mm], end = [var 46mm, var 10mm], center = [var 36mm, var 10mm])
+  rightSide = line(start = [var 46mm, var 10mm], end = [var 46mm, var 39mm])
+  rearRightRound = arc(start = [var 46mm, var 39mm], end = [var 36mm, var 49mm], center = [var 36mm, var 39mm])
+  rearBiasEdge = line(start = [var 36mm, var 49mm], end = [var -36mm, var 66mm])
+  rearLeftRound = arc(start = [var -36mm, var 66mm], end = [var -46mm, var 56mm], center = [var -36mm, var 56mm])
+  leftSide = line(start = [var -46mm, var 56mm], end = [var -46mm, var 10mm])
+  frontLeftRound = arc(start = [var -46mm, var 10mm], end = [var -36mm, var 0mm], center = [var -36mm, var 10mm])
+  coincident([frontEdge.end, frontRightRound.start])
+  coincident([frontRightRound.end, rightSide.start])
+  coincident([rightSide.end, rearRightRound.start])
+  coincident([rearRightRound.end, rearBiasEdge.start])
+  coincident([rearBiasEdge.end, rearLeftRound.start])
+  coincident([rearLeftRound.end, leftSide.start])
+  coincident([leftSide.end, frontLeftRound.start])
+  coincident([frontLeftRound.end, frontEdge.start])
+  horizontal(frontEdge)
+  vertical(rightSide)
+  vertical(leftSide)
+  tangent([frontEdge, frontRightRound])
+  tangent([frontRightRound, rightSide])
+  tangent([rightSide, rearRightRound])
+  tangent([rearLeftRound, leftSide])
+  tangent([leftSide, frontLeftRound])
+  tangent([frontLeftRound, frontEdge])
+  equalRadius([
+    frontRightRound,
+    rearRightRound,
+    rearLeftRound,
+    frontLeftRound
+  ])
+  radius(frontRightRound) == paddlePlanCornerRadius
+  horizontalDistance([frontEdge.start, ORIGIN]) == paddleHalfFrontFlat
+  verticalDistance([frontEdge.start, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, frontEdge.end]) == paddleHalfFrontFlat
+  horizontalDistance([ORIGIN, rightSide.start]) == paddleHalfWidth
+  verticalDistance([ORIGIN, rightSide.start]) == paddlePlanCornerRadius
+  horizontalDistance([ORIGIN, rightSide.end]) == paddleHalfWidth
+  verticalDistance([ORIGIN, rightSide.end]) == paddleRightRearDepth - paddlePlanCornerRadius
+  horizontalDistance([ORIGIN, rearRightRound.end]) == paddleHalfWidth - paddlePlanCornerRadius
+  verticalDistance([ORIGIN, rearRightRound.end]) == paddleRightRearDepth
+  horizontalDistance([rearLeftRound.start, ORIGIN]) == paddleHalfWidth - paddlePlanCornerRadius
+  verticalDistance([ORIGIN, rearLeftRound.start]) == paddleLeftRearDepth
+  horizontalDistance([leftSide.start, ORIGIN]) == paddleHalfWidth
+  verticalDistance([ORIGIN, leftSide.start]) == paddleLeftRearDepth - paddlePlanCornerRadius
+  horizontalDistance([leftSide.end, ORIGIN]) == paddleHalfWidth
+  verticalDistance([ORIGIN, leftSide.end]) == paddlePlanCornerRadius
+}
+headUpperFullRegion = region(
+  segments = [
+    headUpperFullProfile.frontEdge,
+    headUpperFullProfile.frontRightRound
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+
+headTopPlane = offsetPlane(XY, offset = paddleThickness)
+headTopProfile = sketch(on = headTopPlane) {
+  frontEdge = line(start = [var -26.64mm, var 0mm], end = [var 26.64mm, var 0mm])
+  frontRightRound = arc(start = [var 26.64mm, var 0mm], end = [var 34.04mm, var 7.4mm], center = [var 26.64mm, var 7.4mm])
+  rightSide = line(start = [var 34.04mm, var 7.4mm], end = [var 34.04mm, var 28.86mm])
+  rearRightRound = arc(start = [var 34.04mm, var 28.86mm], end = [var 26.64mm, var 36.26mm], center = [var 26.64mm, var 28.86mm])
+  rearBiasEdge = line(start = [var 26.64mm, var 36.26mm], end = [var -26.64mm, var 48.84mm])
+  rearLeftRound = arc(start = [var -26.64mm, var 48.84mm], end = [var -34.04mm, var 41.44mm], center = [var -26.64mm, var 41.44mm])
+  leftSide = line(start = [var -34.04mm, var 41.44mm], end = [var -34.04mm, var 7.4mm])
+  frontLeftRound = arc(start = [var -34.04mm, var 7.4mm], end = [var -26.64mm, var 0mm], center = [var -26.64mm, var 7.4mm])
+  coincident([frontEdge.end, frontRightRound.start])
+  coincident([frontRightRound.end, rightSide.start])
+  coincident([rightSide.end, rearRightRound.start])
+  coincident([rearRightRound.end, rearBiasEdge.start])
+  coincident([rearBiasEdge.end, rearLeftRound.start])
+  coincident([rearLeftRound.end, leftSide.start])
+  coincident([leftSide.end, frontLeftRound.start])
+  coincident([frontLeftRound.end, frontEdge.start])
+  horizontal(frontEdge)
+  vertical(rightSide)
+  vertical(leftSide)
+  tangent([frontEdge, frontRightRound])
+  tangent([frontRightRound, rightSide])
+  tangent([rightSide, rearRightRound])
+  tangent([rearLeftRound, leftSide])
+  tangent([leftSide, frontLeftRound])
+  tangent([frontLeftRound, frontEdge])
+  equalRadius([
+    frontRightRound,
+    rearRightRound,
+    rearLeftRound,
+    frontLeftRound
+  ])
+  radius(frontRightRound) == paddleEndCornerRadius
+  horizontalDistance([frontEdge.start, ORIGIN]) == paddleEndHalfFrontFlat
+  verticalDistance([frontEdge.start, ORIGIN]) == 0mm
+  horizontalDistance([ORIGIN, frontEdge.end]) == paddleEndHalfFrontFlat
+  horizontalDistance([ORIGIN, rightSide.start]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, rightSide.start]) == paddleEndCornerRadius
+  horizontalDistance([ORIGIN, rightSide.end]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, rightSide.end]) == paddleEndRightRearDepth - paddleEndCornerRadius
+  horizontalDistance([ORIGIN, rearRightRound.end]) == paddleEndHalfWidth - paddleEndCornerRadius
+  verticalDistance([ORIGIN, rearRightRound.end]) == paddleEndRightRearDepth
+  horizontalDistance([rearLeftRound.start, ORIGIN]) == paddleEndHalfWidth - paddleEndCornerRadius
+  verticalDistance([ORIGIN, rearLeftRound.start]) == paddleEndLeftRearDepth
+  horizontalDistance([leftSide.start, ORIGIN]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, leftSide.start]) == paddleEndLeftRearDepth - paddleEndCornerRadius
+  horizontalDistance([leftSide.end, ORIGIN]) == paddleEndHalfWidth
+  verticalDistance([ORIGIN, leftSide.end]) == paddleEndCornerRadius
+}
+headTopRegion = region(
+  segments = [
+    headTopProfile.frontEdge,
+    headTopProfile.frontRightRound
+  ],
+  intersectionIndex = -1,
+  direction = CCW,
+)
+
+export headBody = loft(
+  [
+    headBottomRegion,
+    headLowerFullRegion,
+    headUpperFullRegion,
+    headTopRegion
+  ],
+  vDegree = 3,
+  bezApproximateRational = true,
+)
+
+hiddenHeadBottomProfile = hide(headBottomProfile)
+hiddenHeadLowerFullProfile = hide(headLowerFullProfile)
