@@ -1,10 +1,13 @@
 # Flag Anchor
 
-A flag mount designed to display a flag from a backpack cup holder.
-
+A flag mount designed to display a flag from a backpack cup holder. A simple + hands free tool that can turn anyone with a backpack into an activist.
 ![Flag Anchor](thumbnail.png)
 
-The bracket clips into a standard backpack cup/bottle holder and holds a flag pole at an angle, so you can fly a flag while hiking, camping, biking, or at events — hands-free.
+While I was in university, I loved displaying a flag from the side pocket of my backpack. The problem was that backpacks simply aren't designed to hold flags. It would constantly shift, lean to the side, or fall out altogether.
+
+I searched for a product that could keep the flag secure and properly positioned, but I couldn't find anything that solved the problem.
+
+So I decided to build the solution myself.
 
 ## Photos
 
