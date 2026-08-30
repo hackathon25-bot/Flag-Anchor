@@ -2,6 +2,8 @@
 
 A flag mount designed to display a flag from a backpack cup holder. A simple + hands free tool that can turn anyone with a backpack into an activist. 
 
+AI used: ChatGPT (overall design), Zoo Design (CAD imaging)
+
 3D MODEL: [`Rev E.stl`](Rev%20E.stl) 
 
 ## Figure 1
